@@ -1,0 +1,69 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: Produção
+      folder: Analytics
+      interval: 10s
+      rules:
+        - uid: ceiev3c6dodmod
+          title: PostgreSQL - Sobrecarga de conexões - Produção
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: aeiehddmksagwb
+              model:
+                datasource:
+                    type: grafana-postgresql-datasource
+                    uid: aeiehddmksagwb
+                editorMode: code
+                format: table
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: SELECT count(*) AS active_connections FROM pg_stat_activity;
+                refId: A
+                sql:
+                    columns:
+                        - parameters: []
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 175
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          annotations: {}
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Teams Webhook
